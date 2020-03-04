@@ -1,6 +1,7 @@
 ﻿using Highscore.Website.Data;
 using Highscore.Website.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,7 +29,7 @@ namespace Highscore.Website.Areas.API.Controllers
 
         // GET /api/games({id}
         [HttpGet("{id}")]
-        public ActionResult<Game> Get(int id)
+        public ActionResult<Game> GetById(int id)
         {
             var game = context.Game.FirstOrDefault(x => x.Id == id);
 
@@ -46,8 +47,10 @@ namespace Highscore.Website.Areas.API.Controllers
             context.Game.Add(game);
             context.SaveChanges();
 
-            return Created($"/api/games/{game.Id}", game); // 201 Created (Location: ...)
+            // return Created($"/api/games/{game.Id}", game); // 201 Created (Location: ...)
             // "Här kan du hitta den nya resursen" och här är resursen så ingen GET behövs
+            
+            return CreatedAtAction(nameof(GetById), new { id = game.Id }, game); // samma resultat
         }
 
         [HttpDelete("{id}")]
@@ -64,6 +67,36 @@ namespace Highscore.Website.Areas.API.Controllers
             context.SaveChanges();
 
             return NoContent(); // 204 No Content == resursen har tagits bort
+        }
+
+        // vid en PUT måste du skicka med all information igen
+        [HttpPut("{id}")]
+        public ActionResult Replace(int id, Game game)
+        {
+            if (id != game.Id)
+            {
+                return BadRequest(new { reason = "Game id does not match" }); // 400 Bad Request
+            }
+
+            context.Entry(game).State = EntityState.Modified;
+
+            try
+            {
+                context.SaveChanges();
+            }
+            catch 
+            {
+                if (!context.Game.Any(x => x.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent(); // 204 No Content
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Highscore.Website
             {
                 config.ReturnHttpNotAcceptable = true;
             }).AddXmlSerializerFormatters(); // Gör att vi inte skickar med information om det inte är i rätt format. 
-                                            // (accepterar JSON och XML
+                                            // (accepterar JSON och XML)
 
         }
 
