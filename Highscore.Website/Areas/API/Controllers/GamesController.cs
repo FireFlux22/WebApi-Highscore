@@ -1,5 +1,6 @@
 ﻿using Highscore.Website.Data;
 using Highscore.Website.Data.Entities;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -97,6 +98,27 @@ namespace Highscore.Website.Areas.API.Controllers
             }
 
             return NoContent(); // 204 No Content
+        }
+
+        // Install-Package Microsoft.AspNetCore.JsonPatch
+        // Install-Package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+
+        // PATCH /api/games/2
+        [HttpPatch("{id}")]
+        public ActionResult Update(int id, JsonPatchDocument<Game> patchDoc)
+        {
+            var game = context.Game.FirstOrDefault(x => x.Id == id);
+
+            if (game == null)
+            {
+                return NotFound();
+            }
+
+            patchDoc.ApplyTo(game);
+
+            context.SaveChanges();
+
+            return NoContent();
         }
     }
 }

@@ -40,8 +40,10 @@ namespace Highscore.Website
             services.AddControllers(config =>
             {
                 config.ReturnHttpNotAcceptable = true;
-            }).AddXmlSerializerFormatters(); // Gör att vi inte skickar med information om det inte är i rätt format. 
-                                            // (accepterar JSON och XML)
+            }).AddXmlSerializerFormatters().AddNewtonsoftJson(); 
+                // Gör att vi inte skickar med information om det inte är i rätt format. 
+                // (accepterar JSON och XML)
+                // AddNewtonsoftJson för Patch
 
         }
 
