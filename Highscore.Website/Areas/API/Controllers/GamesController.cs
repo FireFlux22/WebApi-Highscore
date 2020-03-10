@@ -1,5 +1,6 @@
 ﻿using Highscore.Website.Data;
 using Highscore.Website.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,9 @@ using System.Linq;
 
 namespace Highscore.Website.Areas.API.Controllers
 {
+
+
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class GamesController : ControllerBase

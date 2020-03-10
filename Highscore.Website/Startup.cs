@@ -12,6 +12,8 @@ using Highscore.Website.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Highscore.Website
 {
@@ -40,11 +42,27 @@ namespace Highscore.Website
             services.AddControllers(config =>
             {
                 config.ReturnHttpNotAcceptable = true;
-            }).AddXmlSerializerFormatters().AddNewtonsoftJson(); 
-                // Gör att vi inte skickar med information om det inte är i rätt format. 
-                // (accepterar JSON och XML)
-                // AddNewtonsoftJson för Patch
+            }).AddXmlSerializerFormatters().AddNewtonsoftJson();
+            // Gör att vi inte skickar med information om det inte är i rätt format. 
+            // (accepterar JSON och XML)
+            // AddNewtonsoftJson för Patch
 
+            // För åtkomstkontroll
+            // Install-Package System.IdentityModel.Tokens.Jwt
+            // Install-Package Microsoft.AspNetCore.Authentication.JwtBearer
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var signingKey = Convert.FromBase64String(Configuration["Token:SigningKey"]);
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(signingKey)
+                    };
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
