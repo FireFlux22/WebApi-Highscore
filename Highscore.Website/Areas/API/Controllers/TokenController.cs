@@ -48,6 +48,18 @@ namespace Highscore.Website.Areas.API.Controllers
 
             var expirationInMinutes = double.Parse(configuration["Token:ExpirationInMinutes"]);
 
+            var claims = new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim("userId", user.Id.ToString()),
+                });
+
+            var isAdministrator = userManager.IsInRoleAsync(user, "Administrator").Result;
+
+            if (isAdministrator)
+            {
+                claims.AddClaim(new Claim("admin", "true"));
+            }
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 // iat - Issued At Time
@@ -56,11 +68,7 @@ namespace Highscore.Website.Areas.API.Controllers
                 // exp - Expiration Time
                 Expires = DateTime.UtcNow.AddMinutes(expirationInMinutes),
 
-                Subject = new ClaimsIdentity(new List<Claim>
-                {
-                    new Claim("userId", user.Id.ToString()),
-                    new Claim("email", user.Email)
-                }),
+                Subject = claims,
 
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(signinKey),

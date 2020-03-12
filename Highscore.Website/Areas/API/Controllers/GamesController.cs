@@ -46,6 +46,7 @@ namespace Highscore.Website.Areas.API.Controllers
             return game;
         }
 
+        [Authorize(Policy = "IsAdministrator")]
         [HttpPost]
         public ActionResult Created(Game game)
         {
@@ -58,6 +59,7 @@ namespace Highscore.Website.Areas.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = game.Id }, game); // samma resultat
         }
 
+        [Authorize(Policy = "IsAdministrator")]
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
@@ -75,6 +77,7 @@ namespace Highscore.Website.Areas.API.Controllers
         }
 
         // vid en PUT måste du skicka med all information igen
+        [Authorize(Policy = "IsAdministrator")]
         [HttpPut("{id}")]
         public ActionResult Replace(int id, Game game)
         {
